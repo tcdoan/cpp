@@ -4,7 +4,7 @@ This repo contains C++ listings for the experiments and assignments from two c++
 - [C++ For C Programmers, Part A](https://www.coursera.org/learn/c-plus-plus-a)
 - [C++ For C Programmers, Part B](https://www.coursera.org/learn/c-plus-plus-b)
 
-## week 1 - Highlight few cpp improvements over c.
+## Week 1 - Highlight few C++ improvements over C
 - Replace macro definitions by **const** variables
 - Replace macro definitions by **inline** functions
 - Use safe **static_cast** instead of unsafe c casts
