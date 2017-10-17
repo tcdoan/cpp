@@ -24,17 +24,15 @@ int main(void)
   cout << "East seatle graph" << endl << g;
 
 
-  MinPq<Edge> q;
+  MinPq<Edge> q(100);
 
   cout << "inserting into queue " << endl;
-  q.Insert(sam_red);
-  q.Insert(bel_red);  
-  q.Insert(iss_sea);
+  vector<Edge> edges = {sam_red, bel_red, iss_sea};
+  for (int i = 0; i < 3; i++) q.Insert(i, edges[i]);
 
-  Edge top = q.Top();
-  cout << "min = " << top << endl;
+  int min = q.RemoveMin();
+  cout << "min = " << edges[min] << endl;
 
-  q.RemoveTop();
-  top = q.Top();
-  cout << "next min = " << top << endl;  
+  min = q.RemoveMin();
+  cout << "next min = " << edges[min] << endl;  
 }

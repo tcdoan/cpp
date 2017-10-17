@@ -1,4 +1,4 @@
-// Header defining weighted undirected graph ADT
+// This file defines and implement weighted undirected graph ADT
 // This class is not thread-safe.
 // Author: Thanh Doan
 
