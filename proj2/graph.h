@@ -1,5 +1,4 @@
 // This file defines and implement weighted undirected graph ADT
-// This class is not thread-safe.
 // Author: Thanh Doan
 
 #include <vector>
@@ -7,7 +6,7 @@
 
 using namespace std;
 
-// Struct to hold weighted edge, namely distance. 
+// Class to implement undirected weighted edge.
 class Edge
 {
  public:
@@ -24,6 +23,15 @@ class Edge
     distance = other.distance;
     return *this;
   }
+
+  // return other endpoint of this edge
+  // given an enpoint.
+  int Other(int x)
+  {
+    if (x == v) return w;
+    else if (x == w) return v;
+    else throw runtime_error("Illegal endpoint of this edge");
+  }  
 };
 
 bool operator> (const Edge& e1, const Edge& e2)

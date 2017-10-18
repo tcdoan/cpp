@@ -2,7 +2,7 @@
 // to compute the shortest paths
 // from source vertex to all oher vertices
 // on a undirected graph and allow its client to read off
-// the shorest path and distance from s to any other vertex.
+// the shorest path from s to any other vertex.
 //
 // The class uses Graph class implemented in graph.h 
 // and priority queue implemented priority_queue.h
@@ -11,8 +11,11 @@
 //
 // Author: Thanh Doan
 
-#include <vector>
+#include <limits>
+#include <list>
 #include <iostream>
+#include <stdexcept>
+#include <cassert>
 
 using namespace std;
 
@@ -23,56 +26,69 @@ class ShortestPath
   // Construct shortest path given graph g and source vertex s
   ShortestPath(Graph* g, int s) : g(g), s(s)
   {
-    dist_to = new double[g.V()];
-    edge_to = new Edge[g.V()];
+    dist_to = new double[g->V()];
+    edge_to = new Edge[g->V()];
 
     // initially set distance for all pairs (s,v) = infinity
-    for (int v = 0; v < g.V(); v++)
+    for (int v = 0; v < g->V(); v++)
       {
-	dist_to[v] = std::numeric_limits<double>::infinity();
+	dist_to[v] = numeric_limits<double>::infinity();
       }
     dist_to[0] = 0.0;
 
-    pq = new MinPq<Edge>(g.V());
-    Edge s2s(s, s, 0.0);
-    pq.Insert(s2s);
+    // recompute distance to vertex v
+    // by relaxing vertices in order of
+    // distance from s to v
+    pq = new MinPq<double>(g->V());
+    pq->Insert(s, dist_to[s]);
 
-    while (!pq.IsEmpty())
+    while (!pq->IsEmpty())
       {
-	Edge edge = pq.RemoveTop();
-	for (Edge e : g.AdjList(edge.v))
+       int v = pq->RemoveMin();
+	for (Edge e : g->AdjList(v))
 	  {
 	    relax(e, v);
 	  }		
-      }    
+      }
   }
 
-  // Relax edge e and update pq
-  void relax(Edge e, int v)
-  {
-    int w = e.w;
-    if (dist_to[w] > dist_to[v] + e.distance)
-      {
-	dist_to[w] = dist_to[v] + e.distance;
-	edge_to[w] = e;
-	
-      }
+  ~ShortestPath()
+    {
+      delete [] dist_to;
+      delete [] edge_to;
+      delete pq;
+    }
     
-  }
-  
   
   // Returns a shortest distance from s to v
   // if such shorest path exists.
-  // Returns std::numeric_limits<double>::infinity()
+  // Returns numeric_limits<double>::infinity()
   // if no path exists  
-  double DistanceTo(int v);
+  double DistanceTo(int v)
+  {
+    return dist_to[v];
+  }
 
   // Returns a shortest path from source vertex s to vertex v
-  vector<Edge> PathTo(int v);
+  list<Edge> PathTo(int v)
+  {
+      if (!HasPathTo(v))
+	{
+	  return list<Edge>();
+	}
+      list<Edge> path;
+      int x = v;
+      for (Edge e = edge_to[v]; dist_to[x] < numeric_limits<double>::infinity(); e = edge_to[x])
+	{
+	  path.push_front(e);
+	  x = e.Other(x);
+	}
+      return path;
+  }
 
 
   // Returns true if a path from source vertex s to v exists
-  bool hasPathTo(int v)
+  bool HasPathTo(int v)
   {
     return dist_to[v] < numeric_limits<double>::infinity();
   }
@@ -85,12 +101,26 @@ class ShortestPath
   int s;
   
   // dist_to[v] is distance of shorest path from s to v
-  double dist_to[];
+  double* dist_to;
 
   // edge[v] is last edge on shortest path from s to v
-  Edge edge_to[]; 
+  Edge* edge_to;
 
   // priority queue of paths from s to each vertex v
-  MinPQ<Edge> pq;  
-  
-}
+  MinPq<double>* pq;
+
+  // Relax edge e and update pq
+  void relax(Edge e, int v)
+  {
+    int w = e.Other(v);
+    if (dist_to[w] > dist_to[v] + e.distance)
+      {
+	dist_to[w] = dist_to[v] + e.distance;
+	edge_to[w] = e;	
+      }
+
+    if (pq->Contains(w)) pq->DecreaseKey(w, dist_to[w]);
+    else pq->Insert(w, dist_to[w]);        
+  }    
+};
+

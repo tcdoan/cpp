@@ -1,6 +1,8 @@
 
 #include "graph.h"
 #include "priority_queue.h"
+#include "shortest_path.h"
+#include <list>
 #include <iostream> 
 
 using namespace std;
@@ -26,7 +28,7 @@ int main(void)
 
   MinPq<Edge> q(100);
 
-  cout << "inserting into queue " << endl;
+  cout << "testing index priority queue... " << endl;
   vector<Edge> edges = {sam_red, bel_red, iss_sea};
   for (int i = 0; i < 3; i++) q.Insert(i, edges[i]);
 
@@ -34,5 +36,19 @@ int main(void)
   cout << "min = " << edges[min] << endl;
 
   min = q.RemoveMin();
-  cout << "next min = " << edges[min] << endl;  
+  cout << "next min = " << edges[min] << endl;
+
+  cout << "testing shorest path from sammamish to seattle... " << endl;
+
+  ShortestPath sp(&g, 0);
+  double shortestDist = sp.DistanceTo(3);
+  list<Edge> path = sp.PathTo(3);
+  cout << "shorst path ditance is " << shortestDist << endl;
+
+  for (Edge e: path)
+    {
+      cout << e;
+    }
+  cout << endl;  
+  
 }
