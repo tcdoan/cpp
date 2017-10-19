@@ -78,7 +78,9 @@ class ShortestPath
 	}
       list<Edge> path;
       int x = v;
-      for (Edge e = edge_to[v]; dist_to[x] < numeric_limits<double>::infinity(); e = edge_to[x])
+      
+      Edge empty;
+      for (Edge e = edge_to[v]; !(e == empty); e = edge_to[x])
 	{
 	  path.push_front(e);
 	  x = e.Other(x);
@@ -116,11 +118,11 @@ class ShortestPath
     if (dist_to[w] > dist_to[v] + e.distance)
       {
 	dist_to[w] = dist_to[v] + e.distance;
-	edge_to[w] = e;	
-      }
+	edge_to[w] = e;
 
-    if (pq->Contains(w)) pq->DecreaseKey(w, dist_to[w]);
-    else pq->Insert(w, dist_to[w]);        
+	if (pq->Contains(w)) pq->DecreaseKey(w, dist_to[w]);
+	else pq->Insert(w, dist_to[w]);	
+      }
   }    
 };
 

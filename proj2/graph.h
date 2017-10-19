@@ -14,7 +14,10 @@ class Edge
   int w;
   double distance;
 
+  // default constructor creates "empty" edge denoted with
+  // sentinel (-1, -1, 0) values.
   Edge() : v(-1), w(-1), distance(0) {}
+  
   Edge(int v, int w, int weight) : v(v), w(w), distance(weight) {}
   Edge& operator=(const Edge& other)
   {
@@ -33,6 +36,11 @@ class Edge
     else throw runtime_error("Illegal endpoint of this edge");
   }  
 };
+
+bool operator==(const Edge& e1, const Edge& e2)
+{
+  return e1.v == e2.v && e1.w == e2.w && e1.distance == e2.distance;
+}
 
 bool operator> (const Edge& e1, const Edge& e2)
 {

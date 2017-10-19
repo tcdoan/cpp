@@ -1,4 +1,4 @@
-// This file defines and implement indexed PriorityQueue ADT
+// This file defines and implements indexed PriorityQueue ADT
 //
 // The queue contains an array of elements of generic type Key.
 // We assume Key has implemented =, ==, <, <=, >, >= operators
@@ -28,7 +28,7 @@ class MinPq
     for (int i = 0; i <= maxN; i++)
       {
 	qp[i] = -1;
-      }    
+      }
   }
   
 
