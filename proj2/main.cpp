@@ -1,53 +1,53 @@
+// This file implements main client program main.cpp
+//
+// The main function creates 2 random graphs.
+//
+// graph1 has 50 vertices is a random graph
+// with density 0.2 and distance range [1.0, 10.0)
+//
+// graph2 has 50 vertices is a random graph
+// with density 0.4 and distance range [1.0, 10.0)
+//
+// Author: Thanh Doan
 
 #include "graph.h"
 #include "priority_queue.h"
 #include "shortest_path.h"
+#include <iostream>
 #include <list>
-#include <iostream> 
 
 using namespace std;
 
-int main(void)
-{
-  Graph g(5);
-  Edge sam_red(0, 1, 15);
-  Edge bel_red(1, 2, 10);
-  Edge bel_sea(2, 3, 15);
-  Edge red_sea(1, 3, 20);
-  Edge sam_iss(0, 4, 15);
-  Edge iss_sea(4, 3, 20);
-  g.addEdge(sam_red);
-  g.addEdge(bel_red);
-  g.addEdge(bel_sea);
-  g.addEdge(red_sea);
-  g.addEdge(sam_iss);
-  g.addEdge(iss_sea);
+// Compute average path length for
+// 0 -> 1, 0 -> 2,..., 0 -> V-1 paths
+double average_path_len(Graph *g) {
+  ShortestPath sp(g, 0);
+  double dist_sum = 0.0;
+  for (int v = 1; v < g->V(); v++) {
+    dist_sum += sp.DistanceTo(v);
+  }
+  return dist_sum / (g->V() - 1);
+}
+
+int main(void) {
+  // graph1 has 50 vertices is a random graph
+  // with density 0.2 and distance range [1.0, 10.0)
+  Graph g1(50, 0.2, 1.0, 10.0);
+
+  cout<< "Graph 1 " << endl;
+  cout<< "  Nodes: " << g1.V() << endl;
+  cout<< "  Density: 0.2" << endl;
+  cout<< "  Edge distance: random between 1.0 to 10.0" << endl;
+  cout<< "  Average path length: " << average_path_len(&g1) << endl;
   
-  cout << "East seatle graph" << endl << g;
-
-  MinPq<Edge> q(100);
-
-  cout << "testing index priority queue... " << endl;
-  vector<Edge> edges = {sam_red, bel_red, iss_sea};
-  for (int i = 0; i < 3; i++) q.Insert(i, edges[i]);
-
-  int min = q.RemoveMin();
-  cout << "min = " << edges[min] << endl;
-
-  min = q.RemoveMin();
-  cout << "next min = " << edges[min] << endl;
-
-  cout << "testing shorest path from sammamish to seattle... " << endl;
-
-  ShortestPath sp(&g, 0);
-  double shortestDist = sp.DistanceTo(3);
-  list<Edge> path = sp.PathTo(3);
-  cout << "shorst path ditance is " << shortestDist << endl;
-
-  for (Edge e: path)
-    {
-      cout << e;
-    }
-  cout << endl; 
+  cout<< endl;
   
+  // graph2 has 50 vertices is a random graph
+  // with density 0.4 and distance range [1.0, 10.0)
+  Graph g2(50, 0.4, 1.0, 10.0);
+  cout<< "Graph 2 " << endl;
+  cout<< "  Nodes: " << g2.V() << endl;
+  cout<< "  Density: 0.4" << endl;
+  cout<< "  Edge distance: random between 1.0 to 10.0" << endl;
+  cout<< "  Average path length: " << average_path_len(&g2) << endl;
 }

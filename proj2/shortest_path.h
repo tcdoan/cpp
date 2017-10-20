@@ -53,7 +53,7 @@ public:
   }
 
   // Returns a shortest distance from s to v
-  // if such shorest path exists.
+  // if such path exists.
   // Returns numeric_limits<double>::infinity()
   // if no path exists
   double DistanceTo(int v) { return dist_to[v]; }
