@@ -25,7 +25,6 @@ int main(void)
   
   cout << "East seatle graph" << endl << g;
 
-
   MinPq<Edge> q(100);
 
   cout << "testing index priority queue... " << endl;
@@ -49,6 +48,6 @@ int main(void)
     {
       cout << e;
     }
-  cout << endl;  
+  cout << endl; 
   
 }
