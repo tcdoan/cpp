@@ -1,0 +1,14 @@
+Few hundred words about project assignment #2.
+
+Programming assignment 2 gives an interesting opportunity to learn both fundamental C++ programming and basic data structures for solving shortest path computation problem.
+
+By implementing the project, I learned object-oriented design and programming in using C++ as an implementation language. I created MinPq class inside priority_queue.h file to implement the priority queue data type (aka ADT) and learned a great deal about implementing C++ user data types, writing constructors and destructors. I also learned how to implement useful priority queue data structure using binary heap representation.
+
+By writing Graph class, defined and implemented inside graph.h file, I learned how to design and implement a version of undirected weighted graph data type and use it to solve the shortest path computation problem. Implementing Graph ADT using the adjacency list representation naturally lead to the implementation of the Edge class to model edges between vertices. By implementing Edge class, I learned how to implement various types of constructors including default constructor, copy constructor and conversion constructor. Writing Edge class taught me how to implement various C++ overloading operators including ==, <, <=, >, >+ and output stream operator.
+
+
+By writing ShortestPath class, defined and implemented inside shortest_path.h, I learned how to implement a greedy algorithm, named after computer scientist Edsger Wybe Dijkstra, to compute shortest paths from a source vertex s to other vertices. For brevity I didn’t implement the copy constructor for Graph class and use Graph* pointer as a parameter in the ShortestPath constructor. The ShortestPath holds a copy of Graph* pointer and a pointer to MinPq object as instance member variables (aka member fields) and use these pointers for accessing the graph data and using the priority queue to compute shortest distances and paths from source vertex to all other vertices.
+
+By writing the main driver program main.cpp, also known as the workflow manager, I learned about implementing a Monto Carlo simulation to compute for a set of randomly generated graphs an average shortest path. The observation is that, given the same 50 vertices and [1.0, 10.0] random edge distance, the average shortest path for 1000 random graphs with 0.2 edge density is around 7.0 and for random graphs with 0.4 density is around 4.6 to 4.9 which is 40% shorter.  It makes sense that average shortest path for graphs with more edges (higher density) is smaller than for graphs with less edges given the same number of vertices and edges are sampled from the same [1-10] range.
+
+I’d like to acknowledge that during implementation of the priority queue, the graph and the Dijkstra algorithm I looked into the Java implementation of those data structures and algorithms published by Robert Sedgewick and Kevin Wayne at https://algs4.cs.princeton.edu/home/

@@ -34,5 +34,7 @@
 #others
 *.cpp~
 *.h~
+*.zip
 makefile~
+
 
