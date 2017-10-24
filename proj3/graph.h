@@ -21,54 +21,33 @@ public:
   int w;
   double distance;
 
-  // Default constructor creates "empty" edge denoted with
-  // sentinel (-1, -1, 0) values.
-  //
-  Edge() : v(-1), w(-1), distance(0.0) {}
-
   // Construct an edge with vertices and weight.
+  // Default constructor creates "empty" edge denoted with
+  // sentinel (-1, -1, -1) values.
   //
-  Edge(int v, int w, double weight) : v(v), w(w), distance(weight) {}
+  Edge(int v = -1, int w = -1, double weight = -1.0)
+      : v(v), w(w), distance(weight) {}
 
   // Copy constructor
-  Edge &operator=(const Edge &other) {
+  Edge operator=(Edge other) {
     v = other.v;
     w = other.w;
     distance = other.distance;
     return *this;
   }
-
-  // return other endpoint of this edge
-  // given an enpoint.
-  int Other(int x) {
-    if (x == v)
-      return w;
-    else if (x == w)
-      return v;
-    else
-      throw runtime_error("Illegal endpoint of this edge");
-  }
 };
 
-// Implement ==, >, >=, <, <= operators for Edge class
+// In undirected graph, edge(v, w) is edge(w, v)
 bool operator==(const Edge &e1, const Edge &e2) {
-  return e1.v == e2.v && e1.w == e2.w && e1.distance == e2.distance;
+  return (e1.v == e2.v && e1.w == e2.w) || (e1.v == e2.w && e1.w == e2.v);
 }
 
 bool operator>(const Edge &e1, const Edge &e2) {
   return e1.distance > e2.distance;
 }
 
-bool operator>=(const Edge &e1, const Edge &e2) {
-  return e1.distance >= e2.distance;
-}
-
 bool operator<(const Edge &e1, const Edge &e2) {
   return e1.distance < e2.distance;
-}
-
-bool operator<=(const Edge &e1, const Edge &e2) {
-  return e1.distance <= e2.distance;
 }
 
 // Implement the output operator for Edge class
@@ -114,7 +93,7 @@ public:
 
   // Deallocate heap memory pointed by adj
   //
-  ~Graph() { }
+  ~Graph() {}
 
   // return number of vertices
   int V() const { return vertices; }
@@ -128,20 +107,23 @@ public:
     if (edge.distance <= 0)
       throw runtime_error("Edge distance must be positive");
 
-    // Constructor make sure
-    //    adj !=null
-    //    and adj[e.v] is alreay initialized
-    adj[edge.v].push_back(edge);
-    ++edges;
+    if (IsEdgeExisted(edge.v, edge.w) == false) {
+      adj[edge.v].push_back(edge);
+
+      // undirected graph, so edge(w, v) = edge(v, w)
+      Edge wv(edge.w, edge.v, edge.distance);
+      adj[edge.w].push_back(wv);
+      ++edges;
+    }
   }
 
   // Return all edges adj to vertex v.
   //
-  const vector<Edge> AdjList(int v) const { return adj[v]; }
+  vector<Edge> AdjList(int v) { return adj[v]; }
 
   // Return all edges of the graph
   //
-  vector<Edge> Edges() {
+  vector<Edge> Edges() {    
     vector<Edge> list;
     for (auto v : adj) {
       for (Edge e : v) {
@@ -169,14 +151,24 @@ private:
       adj[v] = vector<Edge>();
     }
   }
+
+  // Return true if exists edge from v to w
+  bool IsEdgeExisted(int v, int w) {
+    for (const Edge &e : adj[v]) {
+      if (e.w == w) {
+        return true;
+      }
+    }
+    return false;
+  }
 };
 
 // Implement the output operator for Graph ADT.
 //
-ostream &operator<<(ostream &os, const Graph &g) {
+ostream &operator<<(ostream &os, Graph &g) {
   for (int x = 0; x < g.V(); x++) {
     os << x << ": ";
-    for (Edge edge : g.AdjList(x)) {
+    for (auto& edge : g.AdjList(x)) {
       os << edge;
     }
     os << endl;

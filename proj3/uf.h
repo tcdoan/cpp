@@ -72,4 +72,4 @@ private:
   // weight[x] is the size of the connected component containing x.
   //
   int *weight;
-}
+};

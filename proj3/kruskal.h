@@ -16,11 +16,11 @@ class Mst {
 public:
   // Construct an instance of MST
   //
-  Mst(const Graph *graph) : graph(graph) {
+  Mst(Graph *graph) {
 
-    MinPq *pq = new MinPq();
+    MinPq<Edge> *pq = new MinPq<Edge>();
     for (Edge e : graph->Edges()) {
-      e.Insert(e);
+      pq->Insert(e);
     }
 
     // For checking if min edge from pq is safe
@@ -28,7 +28,8 @@ public:
     UnionFind uf(graph->V());
 
     //
-    while ((!pq->IsEmpty()) && (mst.size() < graph->V() - 1)) {
+    while ((!pq->IsEmpty()) &&
+           (mst.size() < static_cast<unsigned int>(graph->V() - 1))) {
       Edge edge = pq->RemoveMin();
       int v = edge.v;
       int w = edge.w;
@@ -37,17 +38,17 @@ public:
       if (!uf.IsConnected(v, w)) {
         mst.push_back(edge);
         uf.Union(v, w);
-        cost += e.distance;
+        cost += edge.distance;
       }
     }
   }
 
   // Return sum of distance from all edges in the MST.
   //
-  const double Cost() { return cost; }
+  double Cost() { return cost; }
 
   // Return list of edges of the MST.
-  const vector<Edge> Edges() { return mst; }
+  vector<Edge> Edges() { return mst; }
 
 private:
   // Total Mst cost. Sum of weights of all edges of the MST.
@@ -57,4 +58,13 @@ private:
   // List of edges of the MST.
   //
   vector<Edge> mst;
+};
+
+// Implement the output operator for the MST.
+ostream &operator<<(ostream &os, Mst &mst) {
+  for (Edge edge : mst.Edges()) {
+    os << edge << endl;
+  }
+  os << "MST cost: " << mst.Cost() << endl;
+  return os;
 }
