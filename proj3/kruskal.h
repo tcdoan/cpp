@@ -6,6 +6,7 @@
 #include "pq.h"
 #include "uf.h"
 #include <vector>
+#include <memory>
 
 using namespace std;
 
@@ -18,7 +19,7 @@ public:
   //
   Mst(Graph *graph) {
 
-    MinPq<Edge> *pq = new MinPq<Edge>();
+    const unique_ptr<MinPq<Edge>> pq(new MinPq<Edge>());
     for (Edge e : graph->Edges()) {
       pq->Insert(e);
     }

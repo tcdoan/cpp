@@ -1,4 +1,4 @@
-// File: graph.h
+// File: graph.qh
 // Desc: Defines and implement weighted undirected graph ADT
 //       Here we use the adjacency list to represent the
 //       graph data structure internally.
