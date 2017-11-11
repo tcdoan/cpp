@@ -42,3 +42,10 @@ makefile~
 /w5/.vs/w5/v15
 /w5/Debug
 /.vs
+/w5/poker/.vs/poker/v15
+/w5/poker/poker/Debug
+/w5/poker/x64
+/w5/poker/poker/x64
+/w5/poker/Debug
+*.filters
+*.sln
