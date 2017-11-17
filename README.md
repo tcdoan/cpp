@@ -1,8 +1,10 @@
 # cpp 
 
-This repo contains C++ listings for the experiments and assignments from two c++ courses:
+This repo contains code listings for experiments and assignments from c++ courses and books
 - [C++ For C Programmers, Part A](https://www.coursera.org/learn/c-plus-plus-a)
 - [C++ For C Programmers, Part B](https://www.coursera.org/learn/c-plus-plus-b)
+- [Introduction to Computer Organization - X86-64](http://bob.cs.sonoma.edu/IntroCompOrg-x64/book.html)
+- [Introduction to Computer Organization - ARM](http://bob.cs.sonoma.edu/IntroCompOrg-RPi/app-make.html)
 
 ## Week 1 - Highlight few C++ improvements over C
 - Replace macro definitions by **const** variables
