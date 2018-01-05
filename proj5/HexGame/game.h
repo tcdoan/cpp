@@ -15,6 +15,7 @@ public:
     Game(QWidget* parent=NULL);
 
     void DisplayMenu();
+    bool ComputerMove();
 
     // attributes
     QGraphicsScene* scene;

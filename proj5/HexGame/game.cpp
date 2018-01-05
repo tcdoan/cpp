@@ -1,5 +1,6 @@
 #include "game.h"
 #include "button.h"
+#include <time.h>
 
 Game::Game(QWidget *parent)
 {
@@ -45,9 +46,28 @@ void Game::DisplayMenu()
 
 void Game::startGame()
 {
+    srand((unsigned int)time(0));
+    size_t n = 11;
     // clear the screen
     scene->clear();
 
-    board = new Board();
-    board->PlaceHexes(11);
+    board = new Board(n);
+    board->PlaceHexes();
+    ComputerMove();
+}
+
+bool Game::ComputerMove()
+{
+    size_t x = rand() % board->Size();
+
+    while (!board->RedMove(x))
+    {
+        x = rand() % board->Size();
+    }
+
+    if (board->IsGameOver(Player::RED, x))
+    {
+        return true;
+    }
+    return false;
 }

@@ -1,6 +1,7 @@
 #include "hex.h"
+#include <QBrush>
 
-Hex::Hex(QGraphicsItem* parent)
+Hex::Hex(Board* board, int id, QGraphicsItem* parent) : board(board), id(id)
 {
     const int SCALE_FACTOR = 6;
     QVector<QPointF> hexPoints;
@@ -14,4 +15,25 @@ Hex::Hex(QGraphicsItem* parent)
 
     QPolygonF hexagon(hexPoints);
     setPolygon(hexagon);
+}
+
+void Hex::Place(Player player)
+{
+    owner = player;
+
+    QBrush brush;
+    brush.setStyle(Qt::SolidPattern);
+
+    switch(owner)
+    {
+        case Player::BLUE:
+            brush.setColor(Qt::blue);
+            break;
+        case Player::RED:
+            brush.setColor(Qt::red);
+            break;
+        default:
+            brush.setColor(Qt::gray);
+    }
+    setBrush(brush);
 }
