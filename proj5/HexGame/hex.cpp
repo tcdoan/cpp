@@ -1,4 +1,9 @@
 #include "hex.h"
+#include "board.h"
+#include "game.h"
+
+extern Game *game;
+
 #include <QBrush>
 
 Hex::Hex(Board* board, int id, QGraphicsItem* parent) : board(board), id(id)
@@ -17,7 +22,19 @@ Hex::Hex(Board* board, int id, QGraphicsItem* parent) : board(board), id(id)
     setPolygon(hexagon);
 }
 
-void Hex::Place(Player player)
+void Hex::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    if (game->Over || Player::BLUE != board->currentPlayer)
+    {
+        return;
+    }
+
+    int myid = this->id;
+    Paint(Player::BLUE);
+    emit clicked(myid);
+}
+
+void Hex::Paint(Player player)
 {
     owner = player;
 

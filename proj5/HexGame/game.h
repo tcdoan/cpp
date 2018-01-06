@@ -1,30 +1,23 @@
 #ifndef GAME_H
 #define GAME_H
 
-#include "player.h"
 #include "board.h"
-
 #include <QGraphicsView>
 #include <QGraphicsScene>
-
 
 class Game : public QGraphicsView
 {    
     Q_OBJECT
 public:    
     Game(QWidget* parent=NULL);
-
     void DisplayMenu();
-    bool ComputerMove();
 
     // attributes
     QGraphicsScene* scene;
     Board* board;
-    // The current player
-     Player player;
-     QString whosTurn;
+    bool Over;
 public slots:
-     void startGame();
+     void Start();
 };
 
 #endif // GAME_H

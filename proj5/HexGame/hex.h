@@ -3,14 +3,21 @@
 
 #include <QGraphicsPolygonItem>
 #include "player.h"
+#include <QGraphicsItem>
 
 class Board;
 
-class Hex : public QGraphicsPolygonItem
+class Hex : public QObject, public QGraphicsPolygonItem
 {
+    Q_OBJECT
 public:
     Hex(Board* board, int id, QGraphicsItem* parent = NULL);
-    void Place(Player player);
+    void Paint(Player player);
+
+    // public events
+    void mousePressEvent(QGraphicsSceneMouseEvent *event);
+signals:
+    clicked(int hexId);
 private:
     Board* board;
     int id;

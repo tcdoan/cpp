@@ -1,6 +1,5 @@
 #include "game.h"
 #include "button.h"
-#include <time.h>
 
 Game::Game(QWidget *parent)
 {
@@ -31,7 +30,7 @@ void Game::DisplayMenu()
     int bx = this->width()/2 - playButton->boundingRect().width()/2;
     int by = 275;
     playButton->setPos(bx, by);
-    connect(playButton, SIGNAL(click()), this, SLOT(startGame()));
+    connect(playButton, SIGNAL(click()), this, SLOT(Start()));
     scene->addItem(playButton);
 
 
@@ -44,30 +43,14 @@ void Game::DisplayMenu()
     scene->addItem(quitButton);
 }
 
-void Game::startGame()
+void Game::Start()
 {
-    srand((unsigned int)time(0));
-    size_t n = 11;
+    Over = false;
+    int n = 11;
     // clear the screen
     scene->clear();
 
     board = new Board(n);
     board->PlaceHexes();
-    ComputerMove();
-}
-
-bool Game::ComputerMove()
-{
-    size_t x = rand() % board->Size();
-
-    while (!board->RedMove(x))
-    {
-        x = rand() % board->Size();
-    }
-
-    if (board->IsGameOver(Player::RED, x))
-    {
-        return true;
-    }
-    return false;
+    board->currentPlayer = Player::BLUE;
 }

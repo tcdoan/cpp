@@ -4,33 +4,39 @@
 #include <QVector>
 #include "hex.h"
 #include "player.h"
-#include <vector>
 
-using namespace std;
+using std::vector;
 
-class Board
+class Board : public QObject
 {
+    Q_OBJECT
 public:
-    Board(size_t n);
-    size_t Size() { return n*n; }
-    void PlaceHexes();
-    Hex* GetHex(size_t hexId);
+    Board(int n);
+    int Size() { return n*n; }
+    void PlaceHexes();    
+    Hex* GetHex(int hexId);
     QVector<Hex*> GetHexes();
-    bool BlueMove(size_t id);
-    bool RedMove(size_t id);
-    bool IsValidMove(size_t id);
-    bool IsGameOver(Player player, size_t id);
+
+    void RedMove();
+    bool IsValidMove(int id);
+    bool IsGameOver(Player player, int id);
+
+    // make it public so that hex can access
+    Player currentPlayer;
+public slots:
+    void BlueMove(int id);
 
 private:
-    size_t n;
+    int n;
 
     // adjacency list represent graph of the Hex board
-    vector<vector<size_t>> adj;
+    std::vector<std::vector<int>> adj;
 
     // colors represent which hex occupied by blue or red player
-    vector<Player> players;
+    std::vector<Player> players;
     QVector<Hex*> hexes;
-    vector<size_t> MakeAdjList(size_t row, size_t col);
+    void Dfs(vector<bool> marked, int node, Player player, bool& beginNodeVisited, bool& endNodeVisited);
+    std::vector<int> MakeAdjList(int row, int col);
 };
 
 #endif // BOARD_H
