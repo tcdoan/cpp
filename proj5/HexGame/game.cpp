@@ -6,7 +6,7 @@ Game::Game(QWidget *parent)
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setFixedSize(1024, 768);
-    setWindowTitle("Hex game");
+    setWindowTitle("Hex Game");
 
     scene = new QGraphicsScene();
     scene->setSceneRect(0, 0, 1024, 768);
@@ -24,7 +24,6 @@ void Game::DisplayMenu()
     title->setPos(txPos,tyPos);
     scene->addItem(title);
 
-
     // create play button
     Button* playButton = new Button(QString("Play"));
     int bx = this->width()/2 - playButton->boundingRect().width()/2;
@@ -32,7 +31,6 @@ void Game::DisplayMenu()
     playButton->setPos(bx, by);
     connect(playButton, SIGNAL(click()), this, SLOT(Start()));
     scene->addItem(playButton);
-
 
     // create Quit button
     Button* quitButton = new Button(QString("Quit"));
@@ -47,10 +45,11 @@ void Game::Start()
 {
     Over = false;
     int n = 11;
+
     // clear the screen
     scene->clear();
 
     board = new Board(n);
     board->PlaceHexes();
-    board->currentPlayer = Player::BLUE;
+    CurrentPlayer = Player::BLUE;
 }

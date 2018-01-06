@@ -24,14 +24,12 @@ Hex::Hex(Board* board, int id, QGraphicsItem* parent) : board(board), id(id)
 
 void Hex::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (game->Over || Player::BLUE != board->currentPlayer)
+    if (game->Over || Player::BLUE != game->CurrentPlayer)
     {
         return;
     }
 
-    int myid = this->id;
-    Paint(Player::BLUE);
-    emit clicked(myid);
+    emit clicked(this->id);
 }
 
 void Hex::Paint(Player player)

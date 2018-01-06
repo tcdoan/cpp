@@ -22,11 +22,6 @@ Board::Board(int n) : n(n)
     }
 }
 
-QVector<Hex *> Board::GetHexes()
-{
-    return hexes;
-}
-
 Hex* Board::GetHex(int id)
 {
     return hexes[id];
@@ -34,13 +29,15 @@ Hex* Board::GetHex(int id)
 
 // return true if valid move is placed, false otherwise
 void Board::BlueMove(int id)
-{    
+{
+    game->CurrentPlayer = Player::BLUE;
     if (!IsValidMove(id))
     {
         return;
     }
 
     players[id] = Player::BLUE;
+    this->GetHex(id)->Paint(Player::BLUE);
 
     if (this->IsGameOver(Player::BLUE, id))
     {
@@ -52,8 +49,8 @@ void Board::BlueMove(int id)
 
 void Board::RedMove()
 {
+    game->CurrentPlayer = Player::RED;
     srand((unsigned int)time(0));
-    currentPlayer = Player::RED;
     int x = rand() % this->Size();
 
     while (!this->IsValidMove(x))
@@ -62,8 +59,7 @@ void Board::RedMove()
     }
 
     players[x] = Player::RED;
-    Hex* hex = GetHex(x);
-    hex->Paint(Player::RED);
+    this->GetHex(x)->Paint(Player::RED);
 
     if (this->IsGameOver(Player::RED, x))
     {
@@ -72,7 +68,7 @@ void Board::RedMove()
     }
 
     // move to the next player;
-    currentPlayer = Player::BLUE;
+    game->CurrentPlayer = Player::BLUE;
 }
 
 bool Board::IsValidMove(int id)

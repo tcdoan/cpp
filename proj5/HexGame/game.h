@@ -15,6 +15,8 @@ public:
     // attributes
     QGraphicsScene* scene;
     Board* board;
+
+    Player CurrentPlayer;
     bool Over;
 public slots:
      void Start();

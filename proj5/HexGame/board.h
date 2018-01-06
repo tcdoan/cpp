@@ -14,15 +14,12 @@ public:
     Board(int n);
     int Size() { return n*n; }
     void PlaceHexes();    
-    Hex* GetHex(int hexId);
-    QVector<Hex*> GetHexes();
+    Hex* GetHex(int id);
 
     void RedMove();
     bool IsValidMove(int id);
     bool IsGameOver(Player player, int id);
 
-    // make it public so that hex can access
-    Player currentPlayer;
 public slots:
     void BlueMove(int id);
 
