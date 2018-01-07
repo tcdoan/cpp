@@ -24,7 +24,7 @@ private:
     int n;
 
     // adjacency list represent graph of the Hex board
-    std::vector<std::vector<int>> adj;
+    vector<vector<int>> adj;
 
     // players represent which hex occupied by blue or red player
     std::vector<Player> players;
@@ -34,7 +34,7 @@ private:
 
     // Use depth first search to check if game is over.
     void Dfs(vector<bool> marked, int node, Player player, bool& beginNodeVisited, bool& endNodeVisited);
-    std::vector<int> MakeAdjList(int i, int j);
+    vector<int> MakeAdjList(int i, int j);
 };
 
 #endif // BOARD_H

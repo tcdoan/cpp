@@ -2,6 +2,7 @@
 #include "game.h"
 #include <vector>
 #include <time.h>
+#include <scoreeval.h>
 
 extern Game *game;
 using std::vector;
@@ -49,18 +50,29 @@ void Board::BlueMove(int id)
 void Board::RedMove()
 {
     game->CurrentPlayer = Player::RED;
-    srand((unsigned int)time(0));
-    int x = rand() % this->Size();
 
-    while (!this->IsValidMove(x))
+    // hex id coresponding to above maxScore
+    double maxScore = 0.0;
+    int maxHex = 0;
+
+    for (int i = 0; i < hexes.size(); i++)
     {
-        x = rand() % this->Size();
+        if (Player::GRAY == players[i])
+        {
+            ScoreEval eval(i, players, &adj);
+            double score = eval.score();
+            if (score > maxScore)
+            {
+                maxScore = score;
+                maxHex = i;
+            }
+        }
     }
 
-    players[x] = Player::RED;
-    this->GetHex(x)->Paint(Player::RED);
+    players[maxHex] = Player::RED;
+    this->GetHex(maxHex)->Paint(Player::RED);
 
-    if (this->IsGameOver(Player::RED, x))
+    if (this->IsGameOver(Player::RED, maxHex))
     {
         // DisplayGameOver();
         return;
