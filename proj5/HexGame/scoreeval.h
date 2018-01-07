@@ -7,20 +7,14 @@ class ScoreEval
 {
 public:
     const int trialNum = 10000;
-    ScoreEval(int id, std::vector<Player> players, std::vector<std::vector<int>>* adj);
-    double score();
+    ScoreEval(const std::vector<Player>& players, const std::vector<std::vector<int>>& adj);
+    double score(int hexToEval);
 private:
-    // hex to evaluate
-    int hexId;
-
     // information about which player owns which hex
     std::vector<Player> colors;
 
     // graph representation of the hex board
-    std::vector<std::vector<int>>* adj;
-
-    // remaining gray hexes for score evaluation
-    std::vector<int> grayHexes;
+    std::vector<std::vector<int>> adj;
 };
 
 #endif // SCOREEVAL_H

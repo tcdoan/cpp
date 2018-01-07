@@ -55,12 +55,12 @@ void Board::RedMove()
     double maxScore = 0.0;
     int maxHex = 0;
 
+    ScoreEval eval(players, &adj);
     for (int i = 0; i < hexes.size(); i++)
     {
         if (Player::GRAY == players[i])
         {
-            ScoreEval eval(i, players, &adj);
-            double score = eval.score();
+            double score = eval.score(i);
             if (score > maxScore)
             {
                 maxScore = score;

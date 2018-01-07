@@ -7,38 +7,42 @@
 using std::random_shuffle;
 using std::vector;
 
-ScoreEval::ScoreEval(int id, vector<Player> players, vector<vector<int>>* adj)
-    : hexId(id), colors(players), adj(adj)
-{
-    colors[hexId] = Player::RED;
-}
+ScoreEval::ScoreEval(const vector<Player>& players, const vector<vector<int>>& adj)
+    : colors(players), adj(adj) { }
 
 int myrandom (int i) { return std::rand()%i;}
 
-double ScoreEval::score()
+double ScoreEval::score(int hexToEval)
 {
+    vector<Player> players = colors;
+    players[hexToEval] = Player::RED;
+
+    vector<int> grays;
     for (int i = 0; i < colors->size(); i++)
     {
-        if (Player::GRAY == colors[i])
+        if (Player::GRAY == players[i])
         {
-            grayHexes.push_back(i);
+            grays.push_back(i);
         }
     }
 
-    int redWons = 0;
+     // redWins = number of times red player win the gamne in simulation
+    int redWins = 0;
+
     for (int i= 0; i < trialNum; i++)
     {
-        vector<Player> players = colors;
-        std::shuffle(grayHexes.begin(), grayHexes.end(), myrandom);
+        // hold simulated players
+        vector<Player> playout = players;
+        std::shuffle(grays.begin(), grays.end(), myrandom);
 
         Player player = Player::BLUE;
-        for (int id : grayHexes)
+        for (int id : grays)
         {
-            players[id] = player;
+            playout[id] = player;
             player = (player == Player::BLUE) ? Player::RED : Player::BLUE;
         }
 
-        // check who won
+        // check if isRedWon() won
     }
     return 1.0;
 }
