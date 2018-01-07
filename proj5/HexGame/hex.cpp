@@ -3,7 +3,6 @@
 #include "game.h"
 
 extern Game *game;
-
 #include <QBrush>
 
 Hex::Hex(Board* board, int id, QGraphicsItem* parent) : board(board), id(id)
@@ -35,7 +34,6 @@ void Hex::mousePressEvent(QGraphicsSceneMouseEvent *event)
 void Hex::Paint(Player player)
 {
     owner = player;
-
     QBrush brush;
     brush.setStyle(Qt::SolidPattern);
 
@@ -50,5 +48,6 @@ void Hex::Paint(Player player)
         default:
             brush.setColor(Qt::gray);
     }
+
     setBrush(brush);
 }

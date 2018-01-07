@@ -6,7 +6,7 @@ Game::Game(QWidget *parent)
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setFixedSize(1024, 768);
-    setWindowTitle("Hex Game");
+    setWindowTitle("Hex Game - You vs Computer - You are blue and move first");
 
     scene = new QGraphicsScene();
     scene->setSceneRect(0, 0, 1024, 768);
@@ -15,7 +15,6 @@ Game::Game(QWidget *parent)
 
 void Game::DisplayMenu()
 {
-    // create title
     QGraphicsTextItem* title = new QGraphicsTextItem(QString("Hex Game"));
     QFont font("comic sans", 50);
     title->setFont(font);
@@ -24,7 +23,6 @@ void Game::DisplayMenu()
     title->setPos(txPos,tyPos);
     scene->addItem(title);
 
-    // create play button
     Button* playButton = new Button(QString("Play"));
     int bx = this->width()/2 - playButton->boundingRect().width()/2;
     int by = 275;
@@ -32,7 +30,6 @@ void Game::DisplayMenu()
     connect(playButton, SIGNAL(click()), this, SLOT(Start()));
     scene->addItem(playButton);
 
-    // create Quit button
     Button* quitButton = new Button(QString("Quit"));
     int qx = this->width()/2 - quitButton->boundingRect().width()/2;
     int qy = 350;
@@ -45,10 +42,7 @@ void Game::Start()
 {
     Over = false;
     int n = 11;
-
-    // clear the screen
     scene->clear();
-
     board = new Board(n);
     board->PlaceHexes();
     CurrentPlayer = Player::BLUE;

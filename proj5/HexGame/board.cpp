@@ -4,7 +4,6 @@
 #include <time.h>
 
 extern Game *game;
-
 using std::vector;
 
 Board::Board(int n) : n(n)
@@ -71,42 +70,8 @@ void Board::RedMove()
     game->CurrentPlayer = Player::BLUE;
 }
 
-bool Board::IsValidMove(int id)
-{
-    if (id >= Size() || id < 0)
-    {
-        return false;
-    }
 
-    if (players[id] != Player::GRAY)
-    {
-        return false;
-    }
-    return true;
-}
-
-bool Board::IsGameOver(Player player, int id)
-{
-    // for dfs search
-    vector<bool> marked(Size(), false);
-
-    // init beginNodeVisited and endNodeVisited with false
-    bool beginNodeVisited = false;
-    bool endNodeVisited = false;
-
-    Dfs(marked, id, player, beginNodeVisited, endNodeVisited);
-
-    if (beginNodeVisited && endNodeVisited)
-    {
-        game->Over = true;
-        return true;
-    }
-
-    game->Over = false;
-    return false;
-}
-
-// place hexes onto n by n board.
+// place hexes onto board.
 void Board::PlaceHexes()
 {
     const int xmargin = 25;
@@ -129,109 +94,78 @@ void Board::PlaceHexes()
     }
 }
 
-vector<int> Board::MakeAdjList(int row, int col)
+bool Board::IsValidMove(int id)
+{
+    if (id >= Size() || id < 0 || players[id] != Player::GRAY)
+    {
+        return false;
+    }
+
+    return true;
+}
+
+bool Board::IsGameOver(Player player, int id)
+{
+    // for dfs search
+    vector<bool> marked(Size(), false);
+
+    // Game over when dfs connect from one edge to another.
+    bool edgeNode1 = false;
+    bool edgeNode2 = false;
+
+    Dfs(marked, id, player, edgeNode1, edgeNode2);
+
+    if (edgeNode1 && edgeNode2)
+    {
+        game->Over = true;
+        return game->Over;
+    }
+
+    game->Over = false;
+    return game->Over;
+}
+
+// row i, column j
+vector<int> Board::MakeAdjList(int i, int j)
 {
     vector<int> adjList;
-    if (row == 0)
+
+    if (i > 0)
     {
-        if (col == 0)
-        {
-            adjList.push_back(row*n + col + 1);
-            adjList.push_back((row+1)*n + col);
-            return adjList;
-        }
-        else if (col == n-1)
-        {
-            adjList.push_back(row*n + col - 1);
-            adjList.push_back((row + 1)*n + col -1);
-            adjList.push_back((row + 1)*n + col);
-            return adjList;
-        }
-        else
-        {
-            adjList.push_back(row*n + col - 1);
-            adjList.push_back(row*n + col + 1);
-            adjList.push_back((row + 1)*n + col - 1);
-            adjList.push_back((row + 1)*n + col);
-            return adjList;
-        }
+        adjList.push_back((i-1)*n + j);
+        if (j < n-1) adjList.push_back((i-1)*n + j+1);
     }
-    else if (row == n - 1)
+
+    if (i < n - 1)
     {
-        if (col == 0)
-        {
-            adjList.push_back((row-1)*n + col);
-            adjList.push_back((row - 1)*n + col+1);
-            adjList.push_back(row*n + col + 1);
-            return adjList;
-        }
-        else if (col == n - 1)
-        {
-            adjList.push_back((row - 1)*n + col);
-            adjList.push_back(row*n + col - 1);
-            return adjList;
-        }
-        else
-        {
-            adjList.push_back(row*n + col - 1);
-            adjList.push_back(row*n + col + 1);
-            adjList.push_back((row - 1)*n + col);
-            adjList.push_back((row - 1)*n + col +1);
-            return adjList;
-        }
+        if (j > 0) adjList.push_back((i + 1)*n + j-1);
+        adjList.push_back((i + 1)*n + j);
     }
-    else
+
+    if (j > 0)
     {
-        if (col == 0)
-        {
-            adjList.push_back((row - 1)*n + col);
-            adjList.push_back((row - 1)*n + col + 1);
-            adjList.push_back(row*n + col + 1);
-            adjList.push_back((row + 1)*n + col);
-            return adjList;
-        }
-        else if (col == n - 1)
-        {
-            adjList.push_back((row - 1)*n + col);
-            adjList.push_back(row*n + col - 1);
-            adjList.push_back((row + 1)*n + col -1);
-            adjList.push_back((row + 1)*n + col);
-            return adjList;
-        }
-        else
-        {
-            adjList.push_back((row - 1)*n + col);
-            adjList.push_back((row - 1)*n + col + 1);
-            adjList.push_back(row*n + col - 1);
-            adjList.push_back(row*n + col + 1);
-            adjList.push_back((row + 1)*n + col - 1);
-            adjList.push_back((row + 1)*n + col);
-            return adjList;
-        }
+        adjList.push_back(i*n + j-1);
     }
+
+    if (j < n - 1)
+    {
+        adjList.push_back(i*n + j + 1);
+    }
+
+    return adjList;
 }
 
 void Board::Dfs(vector<bool> marked, int node, Player player, bool& beginNodeVisited, bool& endNodeVisited)
 {
     marked[node] = true;
-    if (Player::BLUE == player && (node % n == 0))
+    if (Player::BLUE == player)
     {
-        beginNodeVisited = true;
-    }
-
-    if (Player::BLUE == player && (node % n == n - 1))
+        if (node % n == 0) beginNodeVisited = true;
+        if (node % n == n - 1) endNodeVisited = true;
+    } else if (Player::RED == player)
     {
-        endNodeVisited = true;
-    }
-
-    if (Player::RED == player && (node / n == 0))
-    {
-        beginNodeVisited = true;
-    }
-
-    if (Player::RED == player && (node / n == n - 1))
-    {
-        endNodeVisited = true;
+        if (node / n == 0) beginNodeVisited = true;
+        if (node / n == n - 1) endNodeVisited = true;
     }
 
     vector<int> adjList = adj[node];

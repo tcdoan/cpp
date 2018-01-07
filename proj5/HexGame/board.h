@@ -17,9 +17,6 @@ public:
     Hex* GetHex(int id);
 
     void RedMove();
-    bool IsValidMove(int id);
-    bool IsGameOver(Player player, int id);
-
 public slots:
     void BlueMove(int id);
 
@@ -29,11 +26,15 @@ private:
     // adjacency list represent graph of the Hex board
     std::vector<std::vector<int>> adj;
 
-    // colors represent which hex occupied by blue or red player
+    // players represent which hex occupied by blue or red player
     std::vector<Player> players;
     QVector<Hex*> hexes;
+    bool IsValidMove(int id);
+    bool IsGameOver(Player player, int id);
+
+    // Use depth first search to check if game is over.
     void Dfs(vector<bool> marked, int node, Player player, bool& beginNodeVisited, bool& endNodeVisited);
-    std::vector<int> MakeAdjList(int row, int col);
+    std::vector<int> MakeAdjList(int i, int j);
 };
 
 #endif // BOARD_H
