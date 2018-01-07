@@ -6,15 +6,26 @@
 class ScoreEval
 {
 public:
-    const int trialNum = 10000;
-    ScoreEval(const std::vector<Player>& players, const std::vector<std::vector<int>>& adj);
+    ScoreEval(int n, int trials, const std::vector<Player>& players, const std::vector<std::vector<int>>& adj);
     double score(int hexToEval);
 private:
+    // board size
+    int n;
+
+    // number of simulation trials to evaluate and score
+    int trials;
+
     // information about which player owns which hex
     std::vector<Player> colors;
 
     // graph representation of the hex board
     std::vector<std::vector<int>> adj;
+
+    // check if red player won the simulated game.
+    bool isRedWon(const std::vector<Player> &playout);
+
+    // use DFS search to check if red player won
+    void RedDfs(const std::vector<Player>& playout, std::vector<bool> &marked, int node, bool& bottomEdgeVisited);
 };
 
 #endif // SCOREEVAL_H

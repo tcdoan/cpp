@@ -28,13 +28,15 @@ SOURCES += \
     game.cpp \
     hex.cpp \
     board.cpp \
-    button.cpp
+    button.cpp \
+    scoreeval.cpp
 
 HEADERS += \
     game.h \
     player.h \
     hex.h \
     board.h \
-    button.h
+    button.h \
+    scoreeval.h
 
 FORMS +=

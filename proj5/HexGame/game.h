@@ -8,7 +8,8 @@
 class Game : public QGraphicsView
 {    
     Q_OBJECT
-public:    
+public:
+    static const int trials = 10000;
     Game(QWidget* parent=NULL);
     void DisplayMenu();
 

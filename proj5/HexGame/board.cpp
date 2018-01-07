@@ -55,7 +55,7 @@ void Board::RedMove()
     double maxScore = 0.0;
     int maxHex = 0;
 
-    ScoreEval eval(players, &adj);
+    ScoreEval eval(n, Game::trials, players, adj);
     for (int i = 0; i < hexes.size(); i++)
     {
         if (Player::GRAY == players[i])
