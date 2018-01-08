@@ -8,9 +8,12 @@ using std::random_shuffle;
 using std::vector;
 
 ScoreEval::ScoreEval(int n, int trials, const vector<Player>& players, const vector<vector<int>>& adj)
-    : n(n), trials(trials), colors(players), adj(adj) { }
+    : n(n), trials(trials), colors(players), adj(adj)
+{
+    srand((unsigned int)time(0));
+}
 
-double ScoreEval::score(int hexToEval)
+int ScoreEval::score(int hexToEval, int maxScore)
 {
     vector<Player> players = colors;
     players[hexToEval] = Player::RED;
@@ -27,33 +30,36 @@ double ScoreEval::score(int hexToEval)
      // redWins = number of times red player win the gamne in simulation
     int redWins = 0;
 
+    vector<Player> playerCopy = players;
     for (int i= 0; i < trials; i++)
     {
-        srand((unsigned int)time(0));
-        // hold simulated players
-        vector<Player> playout = players;
+        // remaining games = trials - i
+        if ((redWins + trials - i) < maxScore)
+        {
+            return 0;
+        }
 
+        // hold simulated players        
         std::random_shuffle(grays.begin(), grays.end());
 
-        Player player = Player::BLUE;
+        Player next = Player::BLUE;
         for (int id : grays)
         {
-            playout[id] = player;
-            player = (player == Player::BLUE) ? Player::RED : Player::BLUE;
+            playerCopy[id] = next;
+            next = (next == Player::BLUE) ? Player::RED : Player::BLUE;
         }
 
         // check if Red player wins
-        if (isRedWon(playout))
+        if (isRedWon(playerCopy))
         {
             redWins += 1;
         }
     }
 
-    double evalScore = (1.0 * redWins) /  trials;
-    return evalScore;
+    return redWins;
 }
 
-bool ScoreEval::isRedWon(const vector<Player>& playout)
+bool ScoreEval::isRedWon(const vector<Player>& playerCopy)
 {
     // for dfs search
     vector<bool> marked(n*n, false);
@@ -64,20 +70,20 @@ bool ScoreEval::isRedWon(const vector<Player>& playout)
     // scan row 0
     for (int id = 0; id < n; id++)
     {
-        if (playout[id] == Player::RED)
+        if (playerCopy[id] == Player::RED)
         {
-            RedDfs(playout, marked, id, bottomEdgeVisited);
+            RedDfs(playerCopy, marked, id, bottomEdgeVisited);
+        }
+        if (bottomEdgeVisited)
+        {
+            return true;
         }
     }
 
-    if (bottomEdgeVisited)
-    {
-        return true;
-    }
     return false;
 }
 
-void ScoreEval::RedDfs(const vector<Player>& playout, vector<bool>& marked, int node, bool& bottomEdgeVisited)
+void ScoreEval::RedDfs(const vector<Player>& playerCopy, vector<bool>& marked, int node, bool& bottomEdgeVisited)
 {
     if (bottomEdgeVisited)
     {
@@ -95,9 +101,9 @@ void ScoreEval::RedDfs(const vector<Player>& playout, vector<bool>& marked, int 
     vector<int> adjList = adj[node];
     for (int x : adjList)
     {
-        if (!marked[x] && playout[x] == Player::RED)
+        if (!marked[x] && playerCopy[x] == Player::RED)
         {
-            RedDfs(playout, marked, x, bottomEdgeVisited);
+            RedDfs(playerCopy, marked, x, bottomEdgeVisited);
         }
     }
 }

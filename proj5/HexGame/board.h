@@ -35,6 +35,7 @@ private:
     // Use depth first search to check if game is over.
     void Dfs(vector<bool> marked, int node, Player player, bool& beginNodeVisited, bool& endNodeVisited);
     vector<int> MakeAdjList(int i, int j);
+
 };
 
 #endif // BOARD_H

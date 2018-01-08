@@ -41,10 +41,12 @@ void Board::BlueMove(int id)
 
     if (this->IsGameOver(Player::BLUE, id))
     {
-        // DisplayGameOver();
+        game->DisplayGameOver(Player::BLUE);
         return;
     }
-    this->RedMove();
+
+    game->UpdateGameStatus(Player::RED);
+    this->RedMove();    
 }
 
 void Board::RedMove()
@@ -52,7 +54,7 @@ void Board::RedMove()
     game->CurrentPlayer = Player::RED;
 
     // hex id coresponding to above maxScore
-    double maxScore = 0.0;
+    int maxScore = 0;
     int maxHex = 0;
 
     ScoreEval eval(n, Game::trials, players, adj);
@@ -60,7 +62,7 @@ void Board::RedMove()
     {
         if (Player::GRAY == players[i])
         {
-            double score = eval.score(i);
+            int score = eval.score(i, maxScore);
             if (score > maxScore)
             {
                 maxScore = score;
@@ -74,12 +76,14 @@ void Board::RedMove()
 
     if (this->IsGameOver(Player::RED, maxHex))
     {
-        // DisplayGameOver();
+        game->DisplayGameOver(Player::RED);
         return;
     }
 
     // move to the next player;
     game->CurrentPlayer = Player::BLUE;
+    game->UpdateGameStatus(game->CurrentPlayer);
+
 }
 
 
@@ -169,6 +173,12 @@ vector<int> Board::MakeAdjList(int i, int j)
 
 void Board::Dfs(vector<bool> marked, int node, Player player, bool& beginNodeVisited, bool& endNodeVisited)
 {
+    // for checking game over we can quit ealier.
+    if (beginNodeVisited && endNodeVisited)
+    {
+        return;
+    }
+
     marked[node] = true;
     if (Player::BLUE == player)
     {

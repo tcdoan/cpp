@@ -12,10 +12,15 @@ public:
     static const int trials = 10000;
     Game(QWidget* parent=NULL);
     void DisplayMenu();
+    void DisplayGameStatus();
+    void UpdateGameStatus(Player whosTurn);
+    void DisplayGameOver(Player winner);
 
     // attributes
     QGraphicsScene* scene;
     Board* board;
+
+    QGraphicsTextItem* GameStatus;
 
     Player CurrentPlayer;
     bool Over;

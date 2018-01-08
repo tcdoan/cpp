@@ -13,6 +13,17 @@ Game::Game(QWidget *parent)
     setScene(scene);
 }
 
+void Game::Start()
+{
+    Over = false;
+    int n = 11;
+    scene->clear();
+    board = new Board(n);
+    board->PlaceHexes();
+    CurrentPlayer = Player::BLUE;
+    this->DisplayGameStatus();
+}
+
 void Game::DisplayMenu()
 {
     QGraphicsTextItem* title = new QGraphicsTextItem(QString("Hex Game"));
@@ -38,12 +49,50 @@ void Game::DisplayMenu()
     scene->addItem(quitButton);
 }
 
-void Game::Start()
+void Game::DisplayGameOver(Player winner)
 {
-    Over = false;
-    int n = 11;
-    scene->clear();
-    board = new Board(n);
-    board->PlaceHexes();
-    CurrentPlayer = Player::BLUE;
+    if(winner == Player::RED)
+    {
+        GameStatus->setPlainText(QString("YOU LOST :)"));
+    }
+    else
+    {
+        GameStatus->setPlainText(QString("YOU WON!!!!"));
+    }
+}
+
+void Game::DisplayGameStatus()
+{
+    QGraphicsTextItem* leftTitle = new QGraphicsTextItem(QString("Human: Blue. East to West"));
+    QFont leftFont("comic sans", 12);
+    leftTitle->setFont(leftFont);
+    int leftTitleXPos = 40;
+    leftTitle->setPos(leftTitleXPos,20);
+    scene->addItem(leftTitle);
+
+    QGraphicsTextItem* rightTitle = new QGraphicsTextItem(QString("Computer: Red. North to South"));
+    QFont rightFont("comic sans", 12);
+    rightTitle->setFont(rightFont);
+    int rightTitleXPos = this->width() - rightTitle->boundingRect().width() - 40;
+    rightTitle->setPos(rightTitleXPos,20);
+    scene->addItem(rightTitle);
+
+    GameStatus = new QGraphicsTextItem(QString("Whos turn: Human"));
+    QFont font("comic sans", 16);
+    GameStatus->setFont(font);
+    int statusXPos = this->width()/2 - GameStatus->boundingRect().width()/2;
+    GameStatus->setPos(statusXPos,20);
+    scene->addItem(GameStatus);
+}
+
+void Game::UpdateGameStatus(Player whosTurn)
+{
+    if(whosTurn == Player::RED)
+    {
+        GameStatus->setPlainText(QString("Who's turn: Computer. thinking..."));
+    }
+    else
+    {
+        GameStatus->setPlainText(QString("Who's turn: Human"));
+    }
 }
