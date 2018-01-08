@@ -10,8 +10,6 @@ using std::vector;
 ScoreEval::ScoreEval(int n, int trials, const vector<Player>& players, const vector<vector<int>>& adj)
     : n(n), trials(trials), colors(players), adj(adj) { }
 
-int myrandom (int i) { return std::rand()%i;}
-
 double ScoreEval::score(int hexToEval)
 {
     vector<Player> players = colors;
@@ -34,7 +32,8 @@ double ScoreEval::score(int hexToEval)
         srand((unsigned int)time(0));
         // hold simulated players
         vector<Player> playout = players;
-        std::shuffle(grays.begin(), grays.end(), myrandom);
+
+        std::random_shuffle(grays.begin(), grays.end());
 
         Player player = Player::BLUE;
         for (int id : grays)
