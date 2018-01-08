@@ -13,7 +13,7 @@ ScoreEval::ScoreEval(int n, int trials, const vector<Player>& players, const vec
     srand((unsigned int)time(0));
 }
 
-int ScoreEval::score(int hexToEval)
+std::pair<int, int> ScoreEval::score(int hexToEval)
 {
     vector<Player> players = colors;
     players[hexToEval] = Player::RED;
@@ -50,7 +50,7 @@ int ScoreEval::score(int hexToEval)
         }
     }
 
-    return redWins;
+    return std::make_pair(hexToEval, redWins);
 }
 
 bool ScoreEval::isRedWon(const vector<Player>& playerCopy)

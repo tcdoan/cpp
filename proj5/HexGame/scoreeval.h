@@ -2,6 +2,8 @@
 #define SCOREEVAL_H
 #include <player.h>
 #include <vector>
+#include <tuple>
+#include <utility>
 
 class ScoreEval
 {
@@ -9,7 +11,7 @@ public:
     ScoreEval(int n, int trials, const std::vector<Player>& players, const std::vector<std::vector<int>>& adj);
 
     // maxScore sofar is used to cut off unnecessary trial runs
-    int score(int hexToEval);
+    std::pair<int, int> score(int hexToEval);
 private:
     // board size
     int n;

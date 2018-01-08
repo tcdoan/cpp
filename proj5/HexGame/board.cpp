@@ -3,6 +3,7 @@
 #include <vector>
 #include <time.h>
 #include <scoreeval.h>
+#include  <future>
 
 extern Game *game;
 using std::vector;
@@ -53,21 +54,32 @@ void Board::RedMove()
 {
     game->CurrentPlayer = Player::RED;
 
-    // hex id coresponding to above maxScore
-    int maxScore = 0;
-    int maxHex = 0;
-
     ScoreEval eval(n, Game::trials, players, adj);
+
+    vector<std::future<std::pair<int, int>>> futures;
+
     for (int i = 0; i < hexes.size(); i++)
     {
         if (Player::GRAY == players[i])
         {
-            int score = eval.score(i);
-            if (score > maxScore)
-            {
-                maxScore = score;
-                maxHex = i;
-            }
+            //auto ftr = std::async(std::launch::async, eval.score, i);
+            auto ftr = std::async(std::launch::async, &ScoreEval::score, &eval, i);
+            futures.push_back(std::move(ftr));
+        }
+    }
+
+    // hex id coresponding to above maxScore
+    int maxScore = 0;
+    int maxHex = 0;
+    for (int i = 0; i < futures.size(); i++)
+    {
+        std::pair<int, int> result = futures[i].get();
+        int hexId = result.first;
+        int score = result.second;
+        if (score > maxScore)
+        {
+            maxScore = score;
+            maxHex = hexId;
         }
     }
 
@@ -85,7 +97,6 @@ void Board::RedMove()
     game->UpdateGameStatus(game->CurrentPlayer);
 
 }
-
 
 // place hexes onto board.
 void Board::PlaceHexes()
