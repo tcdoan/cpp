@@ -46,7 +46,7 @@ void Board::BlueMove(int id)
     }
 
     game->UpdateGameStatus(Player::RED);
-    this->RedMove();    
+    this->RedMove();
 }
 
 void Board::RedMove()
@@ -62,7 +62,7 @@ void Board::RedMove()
     {
         if (Player::GRAY == players[i])
         {
-            int score = eval.score(i, maxScore);
+            int score = eval.score(i);
             if (score > maxScore)
             {
                 maxScore = score;

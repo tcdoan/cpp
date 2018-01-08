@@ -13,13 +13,13 @@ ScoreEval::ScoreEval(int n, int trials, const vector<Player>& players, const vec
     srand((unsigned int)time(0));
 }
 
-int ScoreEval::score(int hexToEval, int maxScore)
+int ScoreEval::score(int hexToEval)
 {
     vector<Player> players = colors;
     players[hexToEval] = Player::RED;
 
     vector<int> grays;
-    for (int i = 0; i < players.size(); i++)
+    for (int i = 0; i < n*n; i++)
     {
         if (Player::GRAY == players[i])
         {
@@ -33,12 +33,6 @@ int ScoreEval::score(int hexToEval, int maxScore)
     vector<Player> playerCopy = players;
     for (int i= 0; i < trials; i++)
     {
-        // remaining games = trials - i
-        if ((redWins + trials - i) < maxScore)
-        {
-            return 0;
-        }
-
         // hold simulated players        
         std::random_shuffle(grays.begin(), grays.end());
 
