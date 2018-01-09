@@ -21,6 +21,7 @@ void Game::Start()
     board = new Board(n);
     board->PlaceHexes();
     CurrentPlayer = Player::BLUE;
+    HasPieRuleChance = true;
     this->DisplayGameStatus();
 }
 

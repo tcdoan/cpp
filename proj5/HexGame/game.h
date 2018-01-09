@@ -9,7 +9,7 @@ class Game : public QGraphicsView
 {    
     Q_OBJECT
 public:
-    static const int trials = 5000;
+    static const int trials = 20000;
     Game(QWidget* parent=NULL);
     void DisplayMenu();
     void DisplayGameStatus();
@@ -22,8 +22,11 @@ public:
 
     QGraphicsTextItem* GameStatus;
 
-    Player CurrentPlayer;
-    bool Over;
+    bool HasPieRuleChance = true;
+    int lastBlueHex = 0;
+    Player CurrentPlayer = Player::BLUE;
+    bool Over = false;
+
 public slots:
      void Start();
 };

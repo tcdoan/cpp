@@ -4,6 +4,7 @@
 
 extern Game *game;
 #include <QBrush>
+#include <QGraphicsSceneMouseEvent>
 
 Hex::Hex(Board* board, int id, QGraphicsItem* parent) : board(board), id(id)
 {
@@ -25,6 +26,7 @@ void Hex::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     if (game->Over || Player::BLUE != game->CurrentPlayer)
     {
+        event->ignore();
         return;
     }
 

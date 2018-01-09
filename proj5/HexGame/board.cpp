@@ -47,11 +47,32 @@ void Board::BlueMove(int id)
     }
 
     game->UpdateGameStatus(Player::RED);
+    game->lastBlueHex = id;
     this->RedMove();
 }
 
 void Board::RedMove()
 {
+    if (game->HasPieRuleChance)
+    {
+        players[game->lastBlueHex] = Player::GRAY;
+        GetHex(game->lastBlueHex)->Paint(Player::GRAY);
+
+        ScoreEval pieRuleEval(n, Game::trials, players, adj);
+        if (static_cast<double>(pieRuleEval.score(game->lastBlueHex).second) > static_cast<double>(Game::trials)*0.55)
+        {
+            game->GameStatus->setPlainText(QString("Pie rule accepted."));
+            players[game->lastBlueHex] = Player::RED;
+            GetHex(game->lastBlueHex)->Paint(Player::RED);
+            game->HasPieRuleChance = false;
+            return;
+        }
+
+        players[game->lastBlueHex] = Player::BLUE;
+        GetHex(game->lastBlueHex)->Paint(Player::BLUE);
+        game->HasPieRuleChance = false;
+    }
+
     game->CurrentPlayer = Player::RED;
 
     ScoreEval eval(n, Game::trials, players, adj);
