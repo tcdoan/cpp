@@ -40,6 +40,7 @@ void Ball::Draw(RenderWindow& drawTarget)
 
 void Ball::handleBoundCollision() noexcept
 {
+
 	if (left() < 0)
 		velocity.x = defaultVelocity;
 	else if (right() > windowWidth)
@@ -48,7 +49,7 @@ void Ball::handleBoundCollision() noexcept
 	if (top() < 0)
 		velocity.y = defaultVelocity;
 	else if (bottom() > windowWidth)
-		velocity.y = -defaultVelocity;
+		destroyed = true;
 }
 
 Paddle::Paddle(float x, float y, Color color)
@@ -72,11 +73,11 @@ void Paddle::Draw(RenderWindow& drawTarget)
 
 void Paddle::handleInput()
 {
-	if (Keyboard::isKeyPressed(Keyboard::Key::Left) && (x() - w() / 2.f) > 0)
+	if (Keyboard::isKeyPressed(Keyboard::Key::Left) && left() > 0)
 	{
 		velocity.x = -defaultVelocity;
 	}
-	else if (Keyboard::isKeyPressed(Keyboard::Key::Right) && (x() + w() / 2.f) < windowWidth)
+	else if (Keyboard::isKeyPressed(Keyboard::Key::Right) && right() < windowWidth)
 	{
 		velocity.x = defaultVelocity;
 	}
@@ -86,12 +87,16 @@ void Paddle::handleInput()
 	}
 }
 
-Brick::Brick(float x, float y, Color color)
+Brick::Brick(float x, float y)
 {
 	shape.setPosition(x, y);
 	shape.setSize({ defaultWidth, defaultHeight });
-	shape.setFillColor(color);
 	shape.setOrigin(defaultWidth / 2.f, defaultHeight / 2.f);
+}
+
+void Brick::Update()
+{
+	shape.setFillColor(colors[strength]);
 }
 
 void Brick::Draw(RenderWindow& drawTarget)

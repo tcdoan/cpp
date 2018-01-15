@@ -47,7 +47,7 @@ class Ball : public Entity, public Circle
 {
 public:
 	const float defaultRadius = 12.0f;
-	const float defaultVelocity = 9.0f;
+	const float defaultVelocity = 7.0f;
 
 	Vector2f velocity;
 	Ball(float x, float y, Color color);
@@ -66,7 +66,7 @@ public:
 	void Update() override;
 	void Draw(RenderWindow& drawTarget) override;
 private:
-	const float defaultWidth{ 75.0f };
+	const float defaultWidth{ 100.0f };
 	const float defaultHeight{ 25.0f };
 	const float defaultVelocity{ 7.5f };
 	Color color;
@@ -76,13 +76,23 @@ private:
 class Brick : public Entity, public Retangle
 {
 public:
+	const Color ColorStrength0{ 255, 255, 0, 80 };
+	const Color ColorStrength1{ 255, 255, 0, 80 };
+	const Color ColorStrength2{ 255, 255, 0, 170 };
+	const Color ColorStrength3{ 255, 255, 0, 255 };
+
+	const std::vector<Color> colors{ ColorStrength0, ColorStrength1, ColorStrength2, ColorStrength3 };
+
 	static constexpr float defaultWidth =  60.0f;
 	static constexpr float defaultHeight = 20.0f;
 
-	Brick(float x, float y, Color color);
+	// brick would be destroyed when hits = strength
+	int strength = 1;
+
+	Brick(float x, float y);
+	void Update() override;
 	void Draw(RenderWindow& drawTarget) override;
 private:
-
 	const float defaultVelocity = 9.0f;
 	Color color;
 };

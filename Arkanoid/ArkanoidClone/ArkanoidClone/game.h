@@ -4,7 +4,7 @@
 class Game
 {
 public:
-	enum class State { Running, Paused };
+	enum class State { Running, Paused, Over, Won };
 	Game();
 	void Reset();
 	void Start();
@@ -18,19 +18,18 @@ public:
 
 	void handlePaddleBallCollision(const Paddle& paddle, Ball& ball)
 	{
-		if (!isOverlapping(paddle, ball))
-		{
-			return;
-		}
+		if (!isOverlapping(paddle, ball)) return;
 
-		ball.velocity.y = -ball.velocity.y;
+		ball.velocity.y = -ball.defaultVelocity;
 		ball.velocity.x = ball.x() < paddle.x() ? -ball.defaultVelocity : ball.defaultVelocity;
 	}
 
 	void handleBrickBallCollision(Brick& brick, Ball& ball)
 	{
 		if (!isOverlapping(brick, ball)) return;
-		brick.destroyed = true;
+
+		--brick.strength;
+		if (brick.strength <= 0) brick.destroyed = true;
 
 		float overlapLeft = ball.right() - brick.left();
 		float overlapRight = brick.right() - ball.left();
@@ -53,9 +52,14 @@ public:
 		}
 	}
 private:
-	const Color BallColor = Color::Cyan;
-	const Color PaddleColor = Color::Cyan;
-	const Color BrickColor = Color::Cyan;
+	const Color BallColor = Color::Red;
+	const Color PaddleColor = Color::Red;
+
+	Font arialFont;
+	Text textState;
+
+	int remainingBalls;
+	Text textBalls;
 
 	State state;
 	RenderWindow window{ { windowWidth, windowHeight }, "Arkanoid game demo" };
