@@ -12,7 +12,7 @@ public:
 	void Reset();
 	void Start();
 	void BlueMove(size_t id);
-	void RedMove();
+	size_t RedMove();
 private:
 	size_t n;
 	Font arialFont;

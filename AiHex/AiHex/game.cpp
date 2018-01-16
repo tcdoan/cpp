@@ -1,7 +1,9 @@
 #include "game.h"
 
-using namespace std;
+#include <ctime>        // std::time
+#include <cstdlib>      // std::rand, std::srand
 
+using namespace std;
 
 Game::Game()
 {
@@ -17,7 +19,7 @@ Game::Game()
 
 void Game::Reset()
 {
-
+	srand((unsigned int)time(0));
 	adj = vector<vector<size_t>>(n*n);
 	players = vector<Player>(n*n);
 	for (size_t i = 0; i < n; i++)
@@ -36,12 +38,33 @@ void Game::Reset()
 
 void Game::BlueMove(size_t id)
 {
-	return;
+	state = State::Blue;
+	if (!IsValidMove(id))
+	{
+		return;
+	}
+
+	players[id] = Player::BLUE;
+	if (this->IsGameOver(Player::BLUE, id))
+	{
+		state = State::BlueWon;
+	}
+
+	state = State::Red;
 }
 
-void Game::RedMove()
+size_t Game::RedMove()
 {
-	return;
+	state = State::Red;
+	size_t x;
+	do
+	{
+		x = rand() % Size();
+	} while (players[x] != Player::GRAY);
+
+	players[x] = Player::RED;
+	state = State::Blue;
+	return x;
 }
 
 void Game::Start()
@@ -106,6 +129,8 @@ void Game::PlaceHexes()
 	hexes.clear();
 	const size_t xmargin = 25;
 	const size_t ymargin = 90;
+	const size_t xspacing = 10;
+	const size_t yspacing = 10;
 
 	// row i, column j
 	for (size_t i = 0; i < n; i++)
@@ -113,7 +138,7 @@ void Game::PlaceHexes()
 		for (size_t j = 0; j < n; j++)
 		{
 			unique_ptr<Hex> hex = make_unique<Hex>(i*n + j, HexRadius);
-			hex->SetPos(xmargin + i * HexRadius + j * HexRadius, ymargin + i * HexRadius * 2.0 / 3.0);
+			hex->SetPos(xmargin + i * HexRadius + j * HexRadius*1.8, ymargin + i * HexRadius * 1.6);
 			hexes.push_back(std::move(hex));
 		}
 	}
