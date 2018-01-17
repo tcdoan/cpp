@@ -11,12 +11,16 @@ public:
 	Game();
 	void Reset();
 	void Start();
-	void BlueMove(size_t id);
+	bool BlueMove(size_t id);
 	size_t RedMove();
 private:
+
+	size_t lastBlueHex;
 	size_t n;
 	Font arialFont;
 	Text textState;	
+	Text textMidle;
+
 	RenderWindow window{ VideoMode(windowWidth, windowHeight), windowTitle };
 
 	// adjacency list represent graph of the Hex board
@@ -25,10 +29,11 @@ private:
 	// players represent which hex occupied by blue or red player
 	vector<Player> players;
 	vector<unique_ptr<Hex>> hexes;
+	PieRule pieRule;
 
 	size_t Size() { return n * n; }
 	void PlaceHexes();
-	void Draw();
+	void DrawHexes();
 	size_t GetClickedGrayHexId(Event event);
 	bool IsValidMove(size_t id);
 	bool IsGameOver(Player player, size_t id);

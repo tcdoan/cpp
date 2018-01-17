@@ -1,7 +1,12 @@
 #include "game.h"
+#include "ai.h"
 
 #include <ctime>        // std::time
 #include <cstdlib>      // std::rand, std::srand
+#include <iostream>
+#include  <future>
+#include <thread>
+#include <functional>
 
 using namespace std;
 
@@ -11,10 +16,17 @@ Game::Game()
 	window.setFramerateLimit(60);
 	arialFont.loadFromFile(R"(C:\Windows\Fonts\Arial.ttf)");
 	textState.setFont(arialFont);
+	textState.setFillColor(Color::Black);
+	textState.setCharacterSize(16);
 	textState.setPosition(10, 10);
-	textState.setCharacterSize(15.f);
-	textState.setFillColor(Color::Blue);
-	Reset();
+
+	textMidle.setFont(arialFont);
+	textMidle.setFillColor(Color::Black);
+	textMidle.setCharacterSize(16);
+	textMidle.setString("Turn: your turn");
+	FloatRect midTextRect = textMidle.getLocalBounds();
+	textMidle.setOrigin(midTextRect.left + midTextRect.width / 2.0f, midTextRect.top + midTextRect.height / 2.0f);
+	textMidle.setPosition(windowWidth / 2.0f, 10);
 }
 
 void Game::Reset()
@@ -32,39 +44,84 @@ void Game::Reset()
 		}
 	}
 	PlaceHexes();
+	pieRule = PieRule::Offered;
 	state = State::Blue;
 }
 
 
-void Game::BlueMove(size_t id)
+// return true of move to postion id is valid
+// return false otherwise
+bool Game::BlueMove(size_t id)
 {
 	state = State::Blue;
 	if (!IsValidMove(id))
 	{
-		return;
+		return false;
 	}
-
 	players[id] = Player::BLUE;
-	if (this->IsGameOver(Player::BLUE, id))
+	if (IsGameOver(Player::BLUE, id))
 	{
 		state = State::BlueWon;
 	}
-
-	state = State::Red;
+	else
+	{
+		state = State::Red;
+	}	
+	return true;
 }
 
 size_t Game::RedMove()
 {
-	state = State::Red;
-	size_t x;
-	do
+	size_t pieRuleScore = 0;
+	if (pieRule == PieRule::Offered)
 	{
-		x = rand() % Size();
-	} while (players[x] != Player::GRAY);
+		players[lastBlueHex] = Player::GRAY;
+		Ai pieRuleEval(n, TRIALS, players, adj);
+		pieRuleScore = pieRuleEval.score(lastBlueHex).second;
+		players[lastBlueHex] = Player::BLUE;
+		pieRule = PieRule::Rejected;
+	}
 
-	players[x] = Player::RED;
-	state = State::Blue;
-	return x;
+	state = State::Red;
+	Ai eval(n, TRIALS, players, adj);
+
+	vector<std::future<std::pair<size_t, size_t>>> futures;
+	for (auto& hex : hexes)
+	{
+		size_t id = hex->id;
+		if (Player::GRAY == players[id])
+		{
+			//auto ftr = std::async(std::launch::async, eval.score, i);
+			auto ftr = std::async(std::launch::async, &Ai::score, &eval, id);
+			futures.push_back(std::move(ftr));
+		}
+	}
+
+	// hex id coresponding to above maxScore
+	size_t maxScore = 0;
+	size_t maxHex = 0;
+	for (size_t i = 0; i < futures.size(); i++)
+	{
+		std::pair<size_t, size_t> result = futures[i].get();
+		size_t hexId = result.first;
+		size_t score = result.second;
+		if (score > maxScore)
+		{
+			maxScore = score;
+			maxHex = hexId;
+		}
+	}
+
+	if (maxScore < pieRuleScore)
+	{
+		maxScore = pieRuleScore;
+		maxHex = lastBlueHex;
+		pieRule = PieRule::Accepted;
+		state = State::PieRuleAccepted;
+	}
+
+	players[maxHex] = Player::RED;
+	return maxHex;
 }
 
 void Game::Start()
@@ -80,46 +137,73 @@ void Game::Start()
 		if (Keyboard::isKeyPressed( Keyboard::Key::R)) Reset();
 
 		Event evt;
-		bool mousedPressed = false;
 		while (window.pollEvent(evt))
 		{
 			if (evt.type == Event::Closed) {
 				window.close();
 			}
-			if (evt.type == Event::MouseButtonPressed && evt.mouseButton.button == Mouse::Left && state == State::Blue) {
-				mousedPressed = true;
+			if (state == State::Blue && evt.type == Event::MouseButtonPressed && evt.mouseButton.button == Mouse::Left && state == State::Blue) {
+				size_t hexId = GetClickedGrayHexId(evt);
+				if (hexId != -1)
+				{
+					if (BlueMove(hexId))
+					{
+						lastBlueHex = hexId;
+					}
+				}
+			}
+		}
+
+		if (state == State::Red)
+		{
+			textState.setString("Computer color: Red");
+			textMidle.setString("Computer's turn: thinking...");
+			DrawHexes();
+			window.draw(textState);
+			window.draw(textMidle);
+			window.display();
+
+			std::future<size_t> redMoveFuture = std::async(std::launch::async, &Game::RedMove, this);
+			size_t  id = redMoveFuture.get();
+
+			if (IsGameOver(Player::RED, id))
+			{
+				state = State::RedWon;
+			}
+			else
+			{
+				state = State::Blue;
 			}
 		}
 
 		if (state == State::Blue)
 		{
-			textState.setString("Your turn: Blue");
-			if (mousedPressed)
+			if (pieRule == PieRule::Accepted)
 			{
-				size_t hexId = GetClickedGrayHexId(evt);
-				if (hexId != -1)
-				{
-					BlueMove(hexId);
-				}
+				textState.setString("Computer took Pie Rule");
+				textMidle.setString("Who's turn: your turn");
+			}
+			else
+			{
+				textState.setString("Your color: Blue");
+				textMidle.setString("Who's turn: your turn");
 			}
 		}
-
 		if (state == State::RedWon)
 		{
 			textState.setString("Game Over!");
+			textMidle.setString("You lost :(");
 		}
-
 		if (state == State::BlueWon)
 		{
-			textState.setString("You Won!");
+			textState.setString("Game Over!");
+			textMidle.setString("You Won!");
 		}
 
-		if (state == State::Red)
-		{
-			textState.setString("computer's turn: Red");
-			RedMove();
-		}
-		Draw();
+		DrawHexes();
+		window.draw(textState);
+		window.draw(textMidle);
+		window.display();
 	}
 }
 
@@ -127,8 +211,8 @@ void Game::Start()
 void Game::PlaceHexes()
 {
 	hexes.clear();
-	const size_t xmargin = 25;
-	const size_t ymargin = 90;
+	const size_t xmargin = 20;
+	const size_t ymargin = 80;
 	const size_t xspacing = 10;
 	const size_t yspacing = 10;
 
@@ -144,7 +228,7 @@ void Game::PlaceHexes()
 	}
 }
 
-void Game::Draw()
+void Game::DrawHexes()
 {
 	for (auto& hex : hexes)
 	{
@@ -163,8 +247,6 @@ void Game::Draw()
 		}
 		hex->Draw(window);
 	}
-	window.draw(textState);
-	window.display();
 }
 
 size_t Game::GetClickedGrayHexId(Event evt)
@@ -197,21 +279,12 @@ bool Game::IsGameOver(Player player, size_t id)
 	// Game over when dfs connect from one edge to another.
 	bool edgeNode1 = false;
 	bool edgeNode2 = false;
-
 	Dfs(marked, id, player, edgeNode1, edgeNode2);
 
-	if (edgeNode1 && edgeNode2 && player == Player::RED)
-	{
-		state = State::RedWon;
+	if (edgeNode1 && edgeNode2)
 		return true;
-	}
-
-	if (edgeNode1 && edgeNode2 && player == Player::BLUE)
-	{
-		state = State::BlueWon;
-		return true;
-	}
-	return false;
+	else
+		return false;
 }
 
 vector<size_t> Game::MakeAdjList(size_t i, size_t j)
